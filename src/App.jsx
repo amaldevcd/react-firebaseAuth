@@ -1,33 +1,36 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import './App.css'
+import { auth,provider } from './config'
+import { signInWithPopup } from 'firebase/auth'
+
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [value,setValue] = useState('');
+  const handleClick = () =>
+  {
+    signInWithPopup(auth,provider).then((data)=>{
+      setValue(data.user.email)
+      localStorage.setItem("email",data.user.email);
+    })
+  }
 
+  useEffect(()=>{
+    setValue(localStorage.getItem("email"))
+  })
+
+  const logout = () =>
+  {
+    localStorage.clear()
+    window.location.reload();
+  }
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
+  <div>
+    {value?<div><h2>Welcome {value}</h2>
+    <button onClick={logout}>Logout</button>
+    </div>:
+      <button onClick={handleClick}>Sign in With Google</button>}
+  </div>
   )
 }
 
